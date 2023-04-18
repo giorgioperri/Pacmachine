@@ -217,7 +217,7 @@ if __name__ == "__main__":
 
     # # # TRAINING
     print("Training...")
-    st.play(150)
+    st.play(5000)
     p1.savePolicy()
 
     # DEMO
