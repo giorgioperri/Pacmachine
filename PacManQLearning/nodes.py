@@ -2,7 +2,6 @@ import pygame
 from vector import Vector2
 from constants import *
 import numpy as np
-import sys
 
 class Node(object):
     def __init__(self, x, y):
@@ -12,8 +11,6 @@ class Node(object):
                        DOWN:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT], 
                        LEFT:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT], 
                        RIGHT:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT]}
-        self.tilePos =  Vector2(x / TILEWIDTH, y / TILEHEIGHT)
-        np.set_printoptions(threshold=sys.maxsize)
 
     def denyAccess(self, direction, entity):
         if entity.name in self.access[direction]:
@@ -40,7 +37,6 @@ class NodeGroup(object):
         self.pathSymbols = ['.', '-', '|', 'p']
         data = self.readMazeFile(level)
         self.createNodeTable(data)
-        self.rewards = self.createQLearningTable(data)
         self.connectHorizontally(data)
         self.connectVertically(data)
         self.homekey = None
@@ -54,20 +50,6 @@ class NodeGroup(object):
                 if data[row][col] in self.nodeSymbols:
                     x, y = self.constructKey(col+xoffset, row+yoffset)
                     self.nodesLUT[(x, y)] = Node(x, y)
-
-
-    def createQLearningTable(self, data):
-        rewards = np.full((NROWS, NCOLS), -100)
-        for row in list(range(data.shape[0])):
-            for col in list(range(data.shape[1])):
-                if data[row][col] in self.nodeSymbols or data[row][col] in self.pathSymbols:
-                    rewards[row][col] = -1
-        rewards[7,1] = 100
-        return rewards 
-    
-    def checkForTerminalState(self, Row, Column):
-        return self.rewards[Row,Column] != -1
-
 
     def constructKey(self, x, y):
         return x * TILEWIDTH, y * TILEHEIGHT
@@ -180,3 +162,13 @@ class NodeGroup(object):
     def render(self, screen):
         for node in self.nodesLUT.values():
             node.render(screen)
+        
+    # returns a list of all nodes in (x,y) format
+    def getListOfNodesPixels(self):
+        return list(self.nodesLUT)
+
+    # returns a node in (x,y) format
+    def getPixelsFromNode(self, node):
+        id = list(self.nodesLUT.values()).index(node)
+        listOfPix = self.getListOfNodesPixels()
+        return listOfPix[id]

@@ -4,8 +4,6 @@ from vector import Vector2
 from constants import *
 from entity import Entity
 from sprites import PacmanSprites
-import numpy as np
-import random
 
 class Pacman(Entity):
     def __init__(self, node):
@@ -16,8 +14,6 @@ class Pacman(Entity):
         self.setBetweenNodes(LEFT)
         self.alive = True
         self.sprites = PacmanSprites(self)
-        
-        self.qValues = np.zeros((NROWS, NCOLS, 4))
 
     def reset(self):
         Entity.reset(self)
@@ -34,7 +30,7 @@ class Pacman(Entity):
     def update(self, dt):	
         self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
-        direction = self.getValidKey()
+        direction = self.learntDirection
         if self.overshotTarget():
             self.node = self.target
             if self.node.neighbors[PORTAL] is not None:
@@ -80,10 +76,3 @@ class Pacman(Entity):
         if dSquared <= rSquared:
             return True
         return False
-
-    def getNextAction(self):
-        current = random.random()
-        if current < RHO:
-           return random.choice(self.validDirection())
-        else:
-            return np.argmax(self.qValues[self.node.tilePos.x, self.node.tilePos.y, :])

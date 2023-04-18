@@ -1,5 +1,4 @@
 import pygame
-from qLearning import *
 from pygame.locals import *
 from constants import *
 from pacman import Pacman
@@ -36,7 +35,6 @@ class GameController(object):
         self.fruitNode = None
         self.maze = MazeController()
         self.mazedata = MazeData()######
-        self.qLearningAgent = State()
 
     def setBackground(self):
         self.background_norm = pygame.surface.Surface(SCREENSIZE).convert()
@@ -50,7 +48,6 @@ class GameController(object):
 
     def startGame(self):      
         self.mazedata.loadMaze(self.level)
-        self.mazedata.obj
         self.mazesprites = MazeSprites(self.mazedata.obj.name+".txt", self.mazedata.obj.name+"_rotation.txt")
         self.setBackground()
         self.nodes = NodeGroup(self.mazedata.obj.name+".txt")
@@ -103,12 +100,12 @@ class GameController(object):
 
         
 
-    def update(self):
+    def update(self, isRendering):
         dt = self.clock.tick(30) / 1000.0
         self.textgroup.update(dt)
         self.pellets.update(dt)
         if not self.pause.paused:
-            self.ghosts.update(dt)      
+            self.ghosts.update(dt)
             if self.fruit is not None:
                 self.fruit.update(dt)
             self.checkPelletEvents()
@@ -134,7 +131,8 @@ class GameController(object):
         if afterPauseMethod is not None:
             afterPauseMethod()
         self.checkEvents()
-        self.render()
+        if(isRendering):
+            self.render()
 
     def checkEvents(self):
         for event in pygame.event.get():
