@@ -132,12 +132,17 @@ if __name__ == "__main__":
     st = State(p1)
 
     # # # TRAINING
-    # print("Training...")
-    # st.play(10000)
-    # p1.savePolicy()
+    print("Training...")
+    st.play(10000)
+    p1.savePolicy()
 
     # DEMO
-    demo_p1 = Player("demo", exploration_rho=0, lr_alpha=0)
-    demo_p1.loadPolicy("trained_controller_2500_backup")
-    stDemo = State(demo_p1)
-    stDemo.play()
+    # demo_p1 = Player("demo", exploration_rho=0, lr_alpha=0)
+    # demo_p1.loadPolicy("trained_controller_2500_backup")
+    # stDemo = State(demo_p1)
+    # stDemo.play()
+
+    # TODO - remove lots of points for dying
+    # TODO - implement binary sparse rewards
+    #        positive is already implemented by looking at the score difference
+    #        negative is implemented by worthless steps

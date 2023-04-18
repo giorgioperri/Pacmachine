@@ -32,7 +32,7 @@ class Pacman(Entity):
         self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
         # direction = self.getValidKey()
-        direction = self.getDirection()
+        direction = self.learntDirection
         if self.overshotTarget():
             self.node = self.target
             if self.node.neighbors[PORTAL] is not None:

@@ -51,7 +51,7 @@ class Player:
     # Pacman is expected to move.
     def getAction(self, state, possible_directions, score):
         # print("___________________________")
-        print(self.states_value)
+        # print(self.states_value)
 
         # Update Q-value
         reward = score - self.old_score
