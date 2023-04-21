@@ -143,6 +143,7 @@ if __name__ == "__main__":
     # stDemo.play()
 
     # TODO - remove lots of points for dying
-    # TODO - implement binary sparse rewards
+    # TODO - implement binary sparse rewards to encourage positive actions 
     #        positive is already implemented by looking at the score difference
     #        negative is implemented by worthless steps
+    # TODO - Less lives = worse reward
