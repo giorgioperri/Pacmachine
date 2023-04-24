@@ -20,6 +20,8 @@ class Player:
         # last action
         self.lastAction = []
 
+        self.lastLives = 5
+
     # Get Q(s,a).
     def getQValue(self, state, action):
         return self.states_value[str([state,action])]
@@ -44,17 +46,33 @@ class Player:
         tmp = Counter()
         for action in possible_directions:
           tmp[action] = self.getQValue(state, action)
-        # print(tmp)
         return tmp.argMax()
     
     # The main method required by the game. Called every time that
     # Pacman is expected to move.
-    def getAction(self, state, possible_directions, score):
-        # print("___________________________")
-        # print(self.states_value)
+    def getAction(self, state, possible_directions, score, lives):
 
-        # Update Q-value
         reward = score - self.old_score
+
+        if score == self.old_score:
+            reward = reward - 1
+
+        # The least lives, the worse reward for dying
+        if lives < self.lastLives:
+            if lives == 1:
+                reward = reward - 200
+            elif lives == 2:
+                reward = reward - 180
+            elif lives == 3:
+                reward = reward - 160
+            elif lives == 4:
+                reward = reward - 140
+            elif lives == 5:
+                reward = reward - 120
+            else:
+                reward = reward - 100
+
+
         if len(self.lastState) > 0:
             last_state = self.lastState[-1]
             last_action = self.lastAction[-1]
@@ -73,6 +91,7 @@ class Player:
 
         # Update attributes.
         self.old_score = score
+        self.lastLives = lives
         self.lastState.append(state)
         self.lastAction.append(action)
 

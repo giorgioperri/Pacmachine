@@ -39,10 +39,33 @@ class State:
         else: 
             return None
 
+    def getClosestPelletDirection(self, pellets, pacman_target):
+        closest_pellet = None
+        closest_distance = 0
+        for pellet in pellets.pelletList:
+            distance = math.sqrt((pacman_target[0] - pellet.position.x)**2 + (pacman_target[1] - pellet.position.y)**2)
+            if closest_pellet is None or distance < closest_distance:
+                closest_pellet = pellet
+                closest_distance = distance
+
+        vec = (closest_pellet.position.x - pacman_target[0], closest_pellet.position.y - pacman_target[1])
+        if abs(vec[1]) >= abs(vec[0]):
+            if vec[1] >= 0:
+                return DOWN
+            else:
+                return UP
+        else:
+            if vec[0] >= 0:
+                return RIGHT
+            else:
+                return LEFT
+
+
     # Updates the state with the current game world's information.
-    def updateState(self, ghosts, pacman_target):
+    def updateState(self, ghosts, pellets, pacman_target):
         closest_ghost = self.getClosestGhostDirection(ghosts, pacman_target)
-        self.state = [int(pacman_target[0]), int(pacman_target[1]), closest_ghost]
+        closest_pellet = self.getClosestPelletDirection(pellets, pacman_target)
+        self.state = [int(pacman_target[0]), int(pacman_target[1]), closest_ghost, closest_pellet]
     
     # Apply the chosen action (direction) to the game.
     def applyAction(self, game, direction):
@@ -73,23 +96,22 @@ class State:
     # Main method for training.
     def play(self, iterations=100):
         for i in range(iterations):
-            if i % 1000 == 0:
-                print("Iterations {}".format(i))
+            print("Iterations {}".format(i))
             if i % 500 == 0:
                 p1.savePolicy()
             game = GameController()
             game.startGame()
             game.update()
             pacman_target = game.nodes.getPixelsFromNode(game.pacman.target)
-            self.updateState(game.ghosts, pacman_target)
+            self.updateState(game.ghosts, game.pellets, pacman_target)
             self.level = game.level
             while not self.isEnd:
                 possible_directions = self.availableDirections(game.pacman)
-                p1_action = self.p1.getAction(self.state, possible_directions, game.score)
+                p1_action = self.p1.getAction(self.state, possible_directions, game.score, game.lives)
                 # take action and update board state
                 self.applyAction(game, p1_action)
                 pacman_target = game.nodes.getPixelsFromNode(game.pacman.target)
-                self.updateState(game.ghosts, pacman_target)
+                self.updateState(game.ghosts, game.pellets, pacman_target)
 
                 # check board status if it is end
                 self.gamePaused(game)
@@ -136,14 +158,14 @@ if __name__ == "__main__":
     st.play(10000)
     p1.savePolicy()
 
-    # DEMO
-    # demo_p1 = Player("demo", exploration_rho=0, lr_alpha=0)
-    # demo_p1.loadPolicy("trained_controller_2500_backup")
-    # stDemo = State(demo_p1)
-    # stDemo.play()
+    DEMO
+    demo_p1 = Player("demo", exploration_rho=0, lr_alpha=0)
+    demo_p1.loadPolicy("trained_controller")
+    stDemo = State(demo_p1)
+    stDemo.play()
 
-    # TODO - remove lots of points for dying
-    # TODO - implement binary sparse rewards to encourage positive actions 
+    # DONE - remove lots of points for dying
+    # DONE - implement binary sparse rewards to encourage positive actions
     #        positive is already implemented by looking at the score difference
     #        negative is implemented by worthless steps
-    # TODO - Less lives = worse reward
+    # DONE - Fewer lives = worse reward
