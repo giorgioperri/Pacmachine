@@ -102,7 +102,7 @@ class GameController(object):
         
 
     def update(self):
-        dt = self.clock.tick(30) / 1000.0
+        dt = 60 / 1000.0
         self.textgroup.update(dt)
         self.pellets.update(dt)
         if not self.pause.paused:
@@ -132,7 +132,7 @@ class GameController(object):
         if afterPauseMethod is not None:
             afterPauseMethod()
         self.checkEvents()
-        self.render()
+        # self.render()
 
     def checkEvents(self):
         for event in pygame.event.get():
